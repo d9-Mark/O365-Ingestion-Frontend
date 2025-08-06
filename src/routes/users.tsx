@@ -1,49 +1,37 @@
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
-import type { User } from '../utils/users'
+// src/routes/users.tsx
+import { createFileRoute } from "@tanstack/react-router";
+import { MainLayout } from "../components/layout/MainLayout";
+import { ProtectedRoute } from "./__root";
 
-export const Route = createFileRoute('/users')({
-  loader: async () => {
-    const res = await fetch('/api/users')
+export const Route = createFileRoute("/users")({
+  component: UsersPage,
+});
 
-    if (!res.ok) {
-      throw new Error('Unexpected status code')
-    }
-
-    const data = (await res.json()) as Array<User>
-
-    return data
-  },
-  component: UsersComponent,
-})
-
-function UsersComponent() {
-  const users = Route.useLoaderData()
-
+function UsersPage() {
   return (
-    <div className="p-2 flex gap-2">
-      <ul className="list-disc pl-4">
-        {[
-          ...users,
-          { id: 'i-do-not-exist', name: 'Non-existent User', email: '' },
-        ].map((user) => {
-          return (
-            <li key={user.id} className="whitespace-nowrap">
-              <Link
-                to="/users/$userId"
-                params={{
-                  userId: String(user.id),
-                }}
-                className="block py-1 text-blue-800 hover:text-blue-600"
-                activeProps={{ className: 'text-black font-bold' }}
-              >
-                <div>{user.name}</div>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-      <hr />
-      <Outlet />
-    </div>
-  )
+    <ProtectedRoute requiredRole="admin">
+      <MainLayout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              User Management
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage users and their access permissions (Admin Only)
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Coming Soon
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              User management functionality will be implemented in the next
+              phase.
+            </p>
+          </div>
+        </div>
+      </MainLayout>
+    </ProtectedRoute>
+  );
 }
